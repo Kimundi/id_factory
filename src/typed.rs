@@ -15,7 +15,7 @@ impl<T> Default for IdFactory<T> {
 
 impl<T> IdFactory<T> {
     #[inline]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             factory: crate::untyped::IdFactory::new(),
             _marker: PhantomData,
@@ -78,7 +78,7 @@ impl<T> Debug for Id<T> {
 
 impl<T> Id<T> {
     #[inline]
-    pub fn raw_value(self) -> u64 {
+    pub const fn raw_value(self) -> u64 {
         self.0.raw_value()
     }
 }
@@ -97,4 +97,6 @@ mod tests {
         assert_eq!(id1.raw_value(), 1);
         assert_eq!(id2.raw_value(), 2);
     }
+
+    const _: IdFactory<MyUnit> = IdFactory::new();
 }

@@ -14,11 +14,12 @@ impl Default for IdFactory {
 
 impl IdFactory {
     #[inline]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
-            next_id: NonZeroU64::new(1).unwrap(),
+            next_id: NonZeroU64::MIN,
         }
     }
+
     #[inline]
     pub fn next_id(&mut self) -> Id {
         let id = self.next_id;
@@ -27,6 +28,7 @@ impl IdFactory {
         self.next_id = NonZeroU64::new(u64::from(id) + 1).unwrap();
         Id(id)
     }
+
     #[inline]
     pub fn next_id_typed<T>(&mut self) -> crate::typed::Id<T> {
         let id = self.next_id();
@@ -39,8 +41,8 @@ pub struct Id(pub(crate) NonZeroU64);
 
 impl Id {
     #[inline]
-    pub fn raw_value(self) -> u64 {
-        self.0.into()
+    pub const fn raw_value(self) -> u64 {
+        self.0.get()
     }
 }
 
@@ -56,4 +58,6 @@ mod tests {
         assert_eq!(id1.raw_value(), 1);
         assert_eq!(id2.raw_value(), 2);
     }
+
+    const _: IdFactory = IdFactory::new();
 }
