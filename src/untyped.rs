@@ -1,8 +1,5 @@
 use std::{marker::PhantomData, num::NonZeroU64};
 
-#[derive(Copy, Clone, Hash, PartialEq, PartialOrd, Eq, Ord, Debug)]
-pub struct Id(pub(crate) NonZeroU64);
-
 #[derive(Clone, Hash, PartialEq, PartialOrd, Eq, Ord, Debug)]
 pub struct IdFactory {
     next_id: NonZeroU64,
@@ -34,5 +31,29 @@ impl IdFactory {
     pub fn next_id_typed<T>(&mut self) -> crate::typed::Id<T> {
         let id = self.next_id();
         crate::typed::Id(id, PhantomData)
+    }
+}
+
+#[derive(Copy, Clone, Hash, PartialEq, PartialOrd, Eq, Ord, Debug)]
+pub struct Id(pub(crate) NonZeroU64);
+
+impl Id {
+    #[inline]
+    pub fn raw_value(self) -> u64 {
+        self.0.into()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_basic() {
+        let mut factory = IdFactory::new();
+        let id1 = factory.next_id();
+        let id2 = factory.next_id();
+        assert_eq!(id1.raw_value(), 1);
+        assert_eq!(id2.raw_value(), 2);
     }
 }
